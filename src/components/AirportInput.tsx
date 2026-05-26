@@ -26,7 +26,7 @@ export function AirportInput({
       <>
         <input
           list={listId}
-          className={`h-8 w-16 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-2 text-sm font-medium text-center uppercase tabular-nums shadow-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-400 ${className}`}
+          className={`h-7 w-14 rounded-md border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-1.5 text-[11px] font-medium text-center uppercase tabular-nums shadow-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-400 ${className}`}
           value={value}
           maxLength={3}
           autoComplete="off"
@@ -38,7 +38,7 @@ export function AirportInput({
         <datalist id={listId}>
           {AIRPORTS.map((a) => (
             <option key={a.iata} value={a.iata}>
-              {a.city} — {a.name} ({a.country})
+              {a.city} · {a.name} ({a.country})
             </option>
           ))}
         </datalist>
@@ -61,13 +61,13 @@ export function AirportInput({
       <datalist id={listId}>
         {AIRPORTS.map((a) => (
           <option key={a.iata} value={a.iata}>
-            {a.city} — {a.name} ({a.country})
+            {a.city} · {a.name} ({a.country})
           </option>
         ))}
       </datalist>
       {upper.length === 3 ? (
         <p className="text-[11px] text-neutral-500 truncate">
-          {match ? `${match.city} · ${match.name}, ${match.country}` : "Unknown IATA — using as entered."}
+          {match ? `${match.city} · ${match.name}, ${match.country}` : "Unknown IATA. Using as entered."}
         </p>
       ) : null}
     </div>

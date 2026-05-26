@@ -30,16 +30,16 @@ export function currencySymbol(code: string): string {
 export type RateMap = Record<string, number>; // rate FROM currency TO EUR (1 unit of currency = N EUR)
 
 // Hardcoded starting points so the app never silently treats foreign currency as EUR.
-// Replaced by live ECB rates when the Frankfurter request succeeds.
-// Roughly ECB reference rates; precision doesn't matter — these only fill in while loading or on failure.
+// Replaced by live ECB rates when the Frankfurter request succeeds. These only fill in while
+// loading or on failure, so precision is not critical. Ballpark mid-2026 reference rates.
 export const FALLBACK_RATES: RateMap = {
   EUR: 1,
-  USD: 0.92, GBP: 1.17, CHF: 1.04, JPY: 0.0061, AUD: 0.61, CAD: 0.68, NZD: 0.56,
-  SEK: 0.087, NOK: 0.086, DKK: 0.134, ISK: 0.0066, PLN: 0.23, CZK: 0.040,
-  HUF: 0.0026, RON: 0.20, BGN: 0.51, TRY: 0.028,
-  CNY: 0.13, HKD: 0.12, SGD: 0.69, KRW: 0.00068, INR: 0.011, IDR: 0.000058,
-  THB: 0.026, MYR: 0.20, PHP: 0.016, ZAR: 0.049,
-  BRL: 0.18, MXN: 0.054, ILS: 0.25,
+  USD: 0.86, GBP: 1.18, CHF: 1.07, JPY: 0.0058, AUD: 0.59, CAD: 0.65, NZD: 0.54,
+  SEK: 0.090, NOK: 0.088, DKK: 0.134, ISK: 0.0068, PLN: 0.23, CZK: 0.041,
+  HUF: 0.0026, RON: 0.20, BGN: 0.51, TRY: 0.022,
+  CNY: 0.12, HKD: 0.11, SGD: 0.66, KRW: 0.00064, INR: 0.010, IDR: 0.000054,
+  THB: 0.025, MYR: 0.20, PHP: 0.015, ZAR: 0.047,
+  BRL: 0.16, MXN: 0.049, ILS: 0.24,
 };
 
 type CachedRates = { date: string; rates: RateMap };
@@ -87,36 +87,40 @@ async function fetchRates(): Promise<RateMap> {
 }
 
 export type FxState =
-  | { status: "loading"; rates: RateMap }
-  | { status: "ready"; rates: RateMap; asOf: string }
-  | { status: "error"; rates: RateMap; error: string };
+  | { status: "loading"; rates: RateMap; refresh: () => void }
+  | { status: "ready"; rates: RateMap; asOf: string; refresh: () => void }
+  | { status: "error"; rates: RateMap; error: string; refresh: () => void };
 
 export function useFxRates(): FxState {
+  const [tick, setTick] = useState(0);
   const [state, setState] = useState<FxState>(() => {
     const cached = readCache();
-    if (cached) return { status: "ready", rates: { ...FALLBACK_RATES, ...cached.rates }, asOf: cached.date };
-    return { status: "loading", rates: { ...FALLBACK_RATES } };
+    const refresh = () => setTick((n) => n + 1);
+    if (cached) return { status: "ready", rates: { ...FALLBACK_RATES, ...cached.rates }, asOf: cached.date, refresh };
+    return { status: "loading", rates: { ...FALLBACK_RATES }, refresh };
   });
 
   useEffect(() => {
-    if (state.status === "ready") return;
+    const refresh = () => setTick((n) => n + 1);
+    if (tick === 0 && state.status === "ready") return;
     let active = true;
+    if (tick > 0) setState((s) => ({ status: "loading", rates: s.rates, refresh }));
     fetchRates()
       .then((rates) => {
         if (!active) return;
         writeCache(rates);
-        setState({ status: "ready", rates: { ...FALLBACK_RATES, ...rates }, asOf: todayKey() });
+        setState({ status: "ready", rates: { ...FALLBACK_RATES, ...rates }, asOf: todayKey(), refresh });
       })
       .catch((e: unknown) => {
         if (!active) return;
         const msg = e instanceof Error ? e.message : "Unknown error";
-        setState({ status: "error", rates: { ...FALLBACK_RATES }, error: msg });
+        setState({ status: "error", rates: { ...FALLBACK_RATES }, error: msg, refresh });
       });
     return () => {
       active = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [tick]);
 
   return state;
 }

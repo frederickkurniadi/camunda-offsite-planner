@@ -49,16 +49,16 @@ export function Summary({ trip, rates }: { trip: Trip; rates: RateMap }) {
         </div>
 
         <dl className="space-y-2 text-sm tabular-nums pt-1">
-          <Row label="Personal spend" value={formatMoney(s.personalSpendEUR)} />
-          <Row label="Team spend" value={formatMoney(s.teamSpendEUR)} />
+          <Row label="Personnel" value={formatMoney(s.personalSpendEUR)} />
+          <Row label="Team" value={formatMoney(s.teamSpendEUR)} />
           <div className="h-px bg-neutral-200 dark:bg-neutral-800 my-1" />
-          <Row label="Total spend" value={formatMoney(s.totalSpendEUR)} strong />
+          <Row label="Total Expenses" value={formatMoney(s.totalSpendEUR)} strong />
         </dl>
 
         {s.perPerson.length > 0 ? (
           <details className="text-sm">
             <summary className="cursor-pointer text-xs uppercase tracking-wide text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300">
-              Per-person totals
+              Per-teammate total
             </summary>
             <ul className="mt-2 space-y-1 tabular-nums">
               {s.perPerson.map((p) => {

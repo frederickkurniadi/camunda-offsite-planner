@@ -3,7 +3,7 @@ export type Airport = { iata: string; city: string; name: string; country: strin
 // Curated list of ~200 major international airports.
 // Falls back to free-text IATA entry if user types a code not in the list.
 export const AIRPORTS: Airport[] = [
-  // Europe — UK & Ireland
+  // Europe: UK & Ireland
   { iata: "LHR", city: "London", name: "Heathrow", country: "UK" },
   { iata: "LGW", city: "London", name: "Gatwick", country: "UK" },
   { iata: "STN", city: "London", name: "Stansted", country: "UK" },
@@ -17,7 +17,7 @@ export const AIRPORTS: Airport[] = [
   { iata: "DUB", city: "Dublin", name: "Dublin", country: "Ireland" },
   { iata: "ORK", city: "Cork", name: "Cork", country: "Ireland" },
 
-  // Europe — Germany / Austria / Switzerland
+  // Europe: Germany / Austria / Switzerland
   { iata: "FRA", city: "Frankfurt", name: "Frankfurt", country: "Germany" },
   { iata: "MUC", city: "Munich", name: "Munich", country: "Germany" },
   { iata: "BER", city: "Berlin", name: "Brandenburg", country: "Germany" },
@@ -31,7 +31,7 @@ export const AIRPORTS: Airport[] = [
   { iata: "GVA", city: "Geneva", name: "Geneva", country: "Switzerland" },
   { iata: "BSL", city: "Basel", name: "EuroAirport", country: "Switzerland" },
 
-  // Europe — France / Benelux
+  // Europe: France / Benelux
   { iata: "CDG", city: "Paris", name: "Charles de Gaulle", country: "France" },
   { iata: "ORY", city: "Paris", name: "Orly", country: "France" },
   { iata: "NCE", city: "Nice", name: "Côte d'Azur", country: "France" },
@@ -46,7 +46,7 @@ export const AIRPORTS: Airport[] = [
   { iata: "CRL", city: "Charleroi", name: "Brussels South", country: "Belgium" },
   { iata: "LUX", city: "Luxembourg", name: "Findel", country: "Luxembourg" },
 
-  // Europe — Iberia & Italy
+  // Europe: Iberia & Italy
   { iata: "MAD", city: "Madrid", name: "Barajas", country: "Spain" },
   { iata: "BCN", city: "Barcelona", name: "El Prat", country: "Spain" },
   { iata: "AGP", city: "Málaga", name: "Costa del Sol", country: "Spain" },
@@ -68,7 +68,7 @@ export const AIRPORTS: Airport[] = [
   { iata: "BLQ", city: "Bologna", name: "Bologna", country: "Italy" },
   { iata: "CTA", city: "Catania", name: "Fontanarossa", country: "Italy" },
 
-  // Europe — Nordic & Baltic
+  // Europe: Nordic & Baltic
   { iata: "CPH", city: "Copenhagen", name: "Kastrup", country: "Denmark" },
   { iata: "ARN", city: "Stockholm", name: "Arlanda", country: "Sweden" },
   { iata: "GOT", city: "Gothenburg", name: "Landvetter", country: "Sweden" },
@@ -80,7 +80,7 @@ export const AIRPORTS: Airport[] = [
   { iata: "RIX", city: "Riga", name: "Riga", country: "Latvia" },
   { iata: "VNO", city: "Vilnius", name: "Vilnius", country: "Lithuania" },
 
-  // Europe — Eastern & SE
+  // Europe: Eastern & SE
   { iata: "WAW", city: "Warsaw", name: "Chopin", country: "Poland" },
   { iata: "KRK", city: "Kraków", name: "John Paul II", country: "Poland" },
   { iata: "GDN", city: "Gdańsk", name: "Lech Wałęsa", country: "Poland" },
@@ -100,7 +100,7 @@ export const AIRPORTS: Airport[] = [
   { iata: "BEG", city: "Belgrade", name: "Nikola Tesla", country: "Serbia" },
   { iata: "LJU", city: "Ljubljana", name: "Jože Pučnik", country: "Slovenia" },
 
-  // North America — US
+  // North America: US
   { iata: "JFK", city: "New York", name: "JFK", country: "USA" },
   { iata: "LGA", city: "New York", name: "LaGuardia", country: "USA" },
   { iata: "EWR", city: "Newark", name: "Newark Liberty", country: "USA" },
@@ -136,7 +136,7 @@ export const AIRPORTS: Airport[] = [
   { iata: "SEA", city: "Seattle", name: "Sea-Tac", country: "USA" },
   { iata: "HNL", city: "Honolulu", name: "Daniel K. Inouye", country: "USA" },
 
-  // North America — Canada & Mexico
+  // North America: Canada & Mexico
   { iata: "YYZ", city: "Toronto", name: "Pearson", country: "Canada" },
   { iata: "YUL", city: "Montreal", name: "Trudeau", country: "Canada" },
   { iata: "YVR", city: "Vancouver", name: "Vancouver", country: "Canada" },

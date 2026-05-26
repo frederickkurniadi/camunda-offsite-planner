@@ -3,7 +3,7 @@
 import type { Trip } from "@/lib/types";
 import type { FxState, RateMap } from "@/lib/fx";
 import { FALLBACK_RATES, currencySymbol } from "@/lib/fx";
-import { ArrowLeftRight, Loader2, RotateCcw, AlertCircle, CheckCircle2 } from "lucide-react";
+import { ArrowLeftRight, Loader2, RotateCcw, AlertCircle, CheckCircle2, RefreshCw } from "lucide-react";
 
 function currenciesInUse(trip: Trip): string[] {
   const set = new Set<string>();
@@ -27,11 +27,7 @@ function sourceFor(
   overrides: RateMap | undefined,
 ): { label: string; tone: "override" | "live" | "fallback" } {
   if (overrides && overrides[code] != null) return { label: "override", tone: "override" };
-  if (fx.status === "ready" && fx.rates[code] != null) {
-    // ready rates are merged with fallbacks; only call it "live" if it differs from the fallback seed
-    const seed = FALLBACK_RATES[code];
-    if (seed == null || fx.rates[code] !== seed) return { label: "live", tone: "live" };
-  }
+  if (fx.status === "ready" && fx.rates[code] != null) return { label: "live", tone: "live" };
   return { label: "fallback", tone: "fallback" };
 }
 
@@ -62,10 +58,20 @@ export function FxRatesPanel({
       <div className="px-5 pt-4 pb-3 border-b border-neutral-200/60 dark:border-neutral-800">
         <div className="flex items-center gap-2 text-sm font-semibold text-neutral-900 dark:text-neutral-100">
           <ArrowLeftRight className="h-4 w-4 text-[#D97706]" />
-          FX rates
+          FX Rates
           {fx.status === "loading" ? (
             <Loader2 className="h-3 w-3 animate-spin text-neutral-400 ml-1" />
           ) : null}
+          <button
+            type="button"
+            onClick={fx.refresh}
+            disabled={fx.status === "loading"}
+            title="Re-fetch live ECB rates"
+            aria-label="Refresh rates"
+            className="ml-auto grid place-items-center h-6 w-6 rounded text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            <RefreshCw className={`h-3 w-3 ${fx.status === "loading" ? "animate-spin" : ""}`} />
+          </button>
         </div>
         <p className="text-[11px] text-neutral-500 mt-1">
           Edit the value if today&apos;s live rate isn&apos;t quite right.
@@ -75,7 +81,7 @@ export function FxRatesPanel({
       <div className="px-5 py-3 space-y-2">
         {codes.length === 0 ? (
           <p className="text-xs text-neutral-500 py-1">
-            All amounts are in EUR — no conversion needed.
+            All amounts are in EUR. No conversion needed.
           </p>
         ) : (
           codes.map((code) => {
@@ -154,7 +160,7 @@ function FxFooter({ fx }: { fx: FxState }) {
     return (
       <div className="flex items-start gap-1.5 text-[11px] text-amber-600 dark:text-amber-400">
         <AlertCircle className="h-3 w-3 mt-0.5" />
-        <span>Couldn&apos;t reach ECB — using hardcoded fallbacks. Edit any row to override.</span>
+        <span>Couldn&apos;t reach ECB. Using hardcoded fallbacks. Edit any row to override.</span>
       </div>
     );
   }

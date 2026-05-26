@@ -40,11 +40,11 @@ export function Instructions() {
             How to use this planner
           </div>
           <ol className="list-decimal list-inside space-y-0.5 text-[13px] leading-relaxed">
-            <li>Fill in the trip basics — destination, dates, and per-person EUR budget.</li>
-            <li>Add a row per teammate (or per city — use ×N for multiple people from the same origin). Type costs in any currency.</li>
-            <li>Add team-wide costs that aren&apos;t per-person (group activity, dinner, meeting room).</li>
-            <li>Check the budget pill in the top bar — it stays green while you&apos;re under and turns red when over.</li>
-            <li>Use <strong>Export</strong> to share a JSON snapshot; the next person can <strong>Import</strong> it.</li>
+            <li>Trip Details: destination, dates, per-person EUR budget.</li>
+            <li>One row per teammate. Use ×N for groups from one origin. Any currency.</li>
+            <li>Team-Wide Expenses: activity, dinner, room.</li>
+            <li>Top-bar pill: green under budget, red over.</li>
+            <li><strong>Export</strong> a JSON snapshot. Next planner <strong>Imports</strong> to resume.</li>
           </ol>
         </div>
         <button

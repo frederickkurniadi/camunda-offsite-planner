@@ -37,7 +37,7 @@ export function useTrip(): {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(trip));
     } catch {
-      // quota / private mode — silently skip
+      // quota / private mode. Silently skip.
     }
   }, [trip]);
 

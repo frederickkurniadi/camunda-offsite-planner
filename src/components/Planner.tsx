@@ -6,14 +6,12 @@ import { useFxRates, mergeOverrides } from "@/lib/fx";
 import { headcountOf } from "@/lib/budget";
 import { newTeammate } from "@/lib/defaults";
 import { TripBasics } from "./TripBasics";
-import { TeammateCard } from "./TeammateCard";
+import { TeammateCard, TeammateRowHeader } from "./TeammateCard";
 import { TeamCostsSection } from "./TeamCostsSection";
 import { Summary } from "./Summary";
 import { FxRatesPanel } from "./FxRatesPanel";
 import { BudgetPill } from "./BudgetPill";
-import { SectionNav } from "./SectionNav";
 import { Instructions } from "./Instructions";
-import { NotesSection } from "./NotesSection";
 import { Plane, Download, Upload, RotateCcw, UserPlus, Users } from "lucide-react";
 
 export default function Planner() {
@@ -44,7 +42,6 @@ export default function Planner() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-neutral-50 via-white to-neutral-50 dark:from-neutral-950 dark:via-neutral-950 dark:to-neutral-900">
-      <SectionNav />
       <header className="border-b border-neutral-200/60 dark:border-neutral-800 bg-white/70 dark:bg-neutral-950/70 backdrop-blur sticky top-0 z-10">
         <div className="mx-auto max-w-6xl px-4 py-3 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
@@ -53,7 +50,7 @@ export default function Planner() {
             </span>
             <div>
               <h1 className="text-base font-semibold leading-none">Camunda Offsite Planner</h1>
-              <p className="text-[11px] text-neutral-500 mt-0.5">Plan team offsites against a per-person EUR budget.</p>
+              <p className="text-[11px] text-neutral-500 mt-0.5">Plan team offsites against a per-person EUR budget. DRI: FP&amp;A</p>
             </div>
           </div>
           <div className="flex items-center gap-2 flex-wrap justify-end">
@@ -90,8 +87,8 @@ export default function Planner() {
               <Instructions />
               <TripBasics trip={trip} onChange={setTrip} />
 
-              <section id="teammates" className="scroll-mt-24 space-y-3 rounded-2xl border border-neutral-200/80 dark:border-neutral-800 bg-white/40 dark:bg-neutral-900/40 p-4 border-t-4 border-t-[#FC5D0D]">
-                <div className="flex items-center gap-2">
+              <section id="teammates" className="scroll-mt-24 rounded-2xl border border-neutral-200/80 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-6 shadow-sm border-t-4 border-t-[#FC5D0D]">
+                <div className="flex items-center gap-2 mb-5">
                   <span className="grid place-items-center h-8 w-8 rounded-lg bg-[#FFE2CC] dark:bg-[#3a1d05]/60 text-[#FC5D0D]">
                     <Users className="h-4 w-4" />
                   </span>
@@ -110,60 +107,68 @@ export default function Planner() {
                     Add teammate
                   </button>
                 </div>
-                <div className="space-y-3">
-                  {trip.teammates.length === 0 ? (
-                    <div className="rounded-2xl border border-dashed border-neutral-300 dark:border-neutral-700 p-8 text-center">
-                      <p className="text-sm text-neutral-500">No teammates yet.</p>
-                      <button
-                        type="button"
-                        onClick={addTeammate}
-                        className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 text-xs font-medium px-3 py-1.5"
-                      >
-                        <UserPlus className="h-3.5 w-3.5" /> Add the first one
-                      </button>
-                    </div>
-                  ) : (
-                    trip.teammates.map((t) => (
-                      <TeammateCard
-                        key={t.id}
-                        trip={trip}
-                        teammate={t}
-                        rates={effectiveRates}
-                        onChange={(next) =>
-                          setTrip((prev) => ({
-                            ...prev,
-                            teammates: prev.teammates.map((x) => (x.id === t.id ? next : x)),
-                          }))
-                        }
-                        onRemove={() => {
-                          if (confirm(`Remove ${t.name || "this teammate"}?`)) {
+                {trip.teammates.length === 0 ? (
+                  <div className="rounded-xl border border-dashed border-neutral-300 dark:border-neutral-700 p-8 text-center">
+                    <p className="text-sm text-neutral-500">No teammates yet.</p>
+                    <button
+                      type="button"
+                      onClick={addTeammate}
+                      className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 text-xs font-medium px-3 py-1.5"
+                    >
+                      <UserPlus className="h-3.5 w-3.5" /> Add the first one
+                    </button>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto -mx-1">
+                    <div className="min-w-[680px] px-1 space-y-1">
+                      <TeammateRowHeader />
+                      {trip.teammates.map((t) => (
+                        <TeammateCard
+                          key={t.id}
+                          trip={trip}
+                          teammate={t}
+                          rates={effectiveRates}
+                          onChange={(next) =>
                             setTrip((prev) => ({
                               ...prev,
-                              teammates: prev.teammates.filter((x) => x.id !== t.id),
-                            }));
+                              teammates: prev.teammates.map((x) => (x.id === t.id ? next : x)),
+                            }))
                           }
-                        }}
-                      />
-                    ))
-                  )}
-                </div>
+                          onRemove={() => {
+                            if (confirm(`Remove ${t.name || "this teammate"}?`)) {
+                              setTrip((prev) => ({
+                                ...prev,
+                                teammates: prev.teammates.filter((x) => x.id !== t.id),
+                              }));
+                            }
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
               </section>
 
               <TeamCostsSection
                 trip={trip}
+                rates={effectiveRates}
                 onChange={(next) => setTrip((prev) => ({ ...prev, teamCosts: next }))}
               />
-
-              <NotesSection trip={trip} onChange={setTrip} />
             </div>
 
-            <aside className="space-y-4">
+            <aside className="lg:sticky lg:top-20 lg:self-start lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto space-y-4">
               <Summary trip={trip} rates={effectiveRates} />
               <FxRatesPanel trip={trip} fx={fx} onChange={setTrip} />
             </aside>
           </div>
         )}
       </main>
+
+      <footer className="mt-8 border-t border-neutral-200/60 dark:border-neutral-800">
+        <div className="mx-auto max-w-6xl px-4 py-4 text-center text-[11px] text-neutral-500">
+          &copy; 2026 FK | FP&amp;A. All rights reserved.
+        </div>
+      </footer>
     </div>
   );
 }
