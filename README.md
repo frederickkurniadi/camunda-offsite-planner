@@ -1,36 +1,76 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Camunda Offsite Planner
 
-## Getting Started
+A small Next.js app to plan a team offsite against a per-person budget pool, see the variance, and look up indicative flight prices.
 
-First, run the development server:
+Built for a fully-remote team: each member flies in from their own home airport, stays a few nights, joins a shared activity, then heads home. The budget is treated as a single pool (`budgetPerPerson × headcount`) so cheaper-to-fly teammates can subsidize expensive ones.
+
+## Quick start
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Data is saved to your browser's `localStorage`. Use **Export JSON** to share or version a plan; **Import JSON** to load one.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## What it tracks
 
-## Learn More
+**Trip-level**
+- Destination city + airport (IATA)
+- Arrive / depart dates (defaults to next Mon → Thu)
+- Budget per person (defaults to 2000 EUR)
+- Currency
 
-To learn more about Next.js, take a look at the following resources:
+**Per teammate** — three estimates
+- Travel (flight + getting to/from airports)
+- Lodging (hotel total for the stay)
+- Food (all meals for the trip)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**Team-wide totals**
+- Group activity
+- Special team dinner
+- Meeting room
+- Misc team
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The summary panel shows total spend vs. the pooled budget and the variance.
 
-## Deploy on Vercel
+## Flight price lookup
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Each teammate card has a **Search on Google Flights** link that opens Google Flights in a new tab, pre-filled with that teammate's route and the trip dates. Read the price, type it into the Travel field. No API key, no rate limits.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Deploy
+
+Deploy to Vercel:
+
+```bash
+vercel
+```
+
+No environment variables required.
+
+## Project layout
+
+```
+src/
+  app/
+    page.tsx              # renders <Planner />
+    layout.tsx
+  components/
+    Planner.tsx           # top-level client component
+    TripBasics.tsx
+    TeammateCard.tsx
+    TeamCostsSection.tsx
+    Summary.tsx
+    Field.tsx
+    MoneyInput.tsx
+  lib/
+    types.ts              # Trip / Teammate / TeamCosts types
+    budget.ts             # pure budget math (summarize)
+    dates.ts              # date helpers
+    defaults.ts           # newTrip / newTeammate / team field definitions
+    storage.ts            # useTrip() hook + JSON import/export
+```
+
+The budget math in `lib/budget.ts` is pure and trivially unit-testable if you want to add tests later.
