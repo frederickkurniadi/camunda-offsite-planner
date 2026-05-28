@@ -3,6 +3,7 @@
 import { useMemo, useRef } from "react";
 import { useTrip, exportTripJSON, importTripJSON } from "@/lib/storage";
 import { useFxRates, mergeOverrides } from "@/lib/fx";
+import { useTheme } from "@/lib/theme";
 import { headcountOf } from "@/lib/budget";
 import { newTeammate } from "@/lib/defaults";
 import { TripBasics } from "./TripBasics";
@@ -12,10 +13,12 @@ import { Summary } from "./Summary";
 import { FxRatesPanel } from "./FxRatesPanel";
 import { BudgetPill } from "./BudgetPill";
 import { Instructions } from "./Instructions";
-import { Plane, Download, Upload, RotateCcw, UserPlus, Users } from "lucide-react";
+import { ThemeToggle } from "./ThemeToggle";
+import { Plane, Download, Upload, RotateCcw, UserPlus, Users, BedDouble } from "lucide-react";
 
 export default function Planner() {
   const { trip, setTrip, hydrated, resetTrip } = useTrip();
+  const { theme, setTheme } = useTheme();
   const fx = useFxRates();
   const effectiveRates = useMemo(
     () => mergeOverrides(fx.rates, trip.fxOverrides),
@@ -56,6 +59,7 @@ export default function Planner() {
           <div className="flex items-center gap-2 flex-wrap justify-end">
             {hydrated ? <BudgetPill trip={trip} rates={effectiveRates} /> : null}
             <div className="flex items-center gap-1.5">
+              <ThemeToggle theme={theme} setTheme={setTheme} />
               <ToolbarButton onClick={() => exportTripJSON(trip)} icon={<Download className="h-3.5 w-3.5" />} label="Export" />
               <ToolbarButton onClick={() => fileInput.current?.click()} icon={<Upload className="h-3.5 w-3.5" />} label="Import" />
               <input
@@ -98,14 +102,42 @@ export default function Planner() {
                       ({trip.teammates.reduce((s, t) => s + headcountOf(t), 0)})
                     </span>
                   </h2>
-                  <button
-                    type="button"
-                    onClick={addTeammate}
-                    className="ml-auto inline-flex items-center gap-1.5 rounded-lg bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 text-xs font-medium px-3 py-1.5 hover:bg-neutral-800 dark:hover:bg-white shadow-xs"
-                  >
-                    <UserPlus className="h-3.5 w-3.5" />
-                    Add teammate
-                  </button>
+                  <div className="ml-auto flex items-center gap-2">
+                    {(() => {
+                      const dest = trip.destinationCity;
+                      const canSearch = dest && trip.startDate && trip.endDate;
+                      const hotelUrl = canSearch
+                        ? `https://www.google.com/travel/hotels?q=${encodeURIComponent(dest)}&checkin=${trip.startDate}&checkout=${trip.endDate}`
+                        : undefined;
+                      return canSearch ? (
+                        <a
+                          href={hotelUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title={`Search Google Hotels · ${dest} · ${trip.startDate} → ${trip.endDate}`}
+                          className="grid place-items-center h-8 w-8 rounded-lg border border-[#FC5D0D]/30 bg-[#FFF1E6] dark:bg-[#3a1d05]/40 text-[#FC5D0D] hover:bg-[#FFE2CC] dark:hover:bg-[#5c2a0a]/60 shadow-xs transition-colors"
+                        >
+                          <BedDouble className="h-4 w-4" />
+                        </a>
+                      ) : (
+                        <span
+                          title="Fill in destination city and dates to search hotels"
+                          className="grid place-items-center h-8 w-8 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-950 text-neutral-300 dark:text-neutral-700 cursor-not-allowed"
+                          aria-disabled
+                        >
+                          <BedDouble className="h-4 w-4" />
+                        </span>
+                      );
+                    })()}
+                    <button
+                      type="button"
+                      onClick={addTeammate}
+                      className="inline-flex items-center gap-1.5 rounded-lg bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 text-xs font-medium px-3 py-1.5 hover:bg-neutral-800 dark:hover:bg-white shadow-xs"
+                    >
+                      <UserPlus className="h-3.5 w-3.5" />
+                      Add teammate
+                    </button>
+                  </div>
                 </div>
                 {trip.teammates.length === 0 ? (
                   <div className="rounded-xl border border-dashed border-neutral-300 dark:border-neutral-700 p-8 text-center">

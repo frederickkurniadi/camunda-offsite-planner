@@ -2,9 +2,23 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { Trip } from "./types";
-import { newTrip } from "./defaults";
+import { newTrip, emptyTeamCosts } from "./defaults";
 
 const STORAGE_KEY = "offsite-planner.trip.v3";
+
+// Stable placeholder with no random values — safe for SSR initial state.
+const PLACEHOLDER_TRIP: Trip = {
+  id: "",
+  name: "Team Offsite",
+  destinationCity: "",
+  destinationAirport: "",
+  startDate: "",
+  endDate: "",
+  budgetPerPerson: 2000,
+  teammates: [],
+  teamCosts: emptyTeamCosts(),
+  notes: "",
+};
 
 export function useTrip(): {
   trip: Trip;
@@ -12,22 +26,24 @@ export function useTrip(): {
   hydrated: boolean;
   resetTrip: () => void;
 } {
-  const [trip, setTripState] = useState<Trip>(() => newTrip());
+  const [trip, setTripState] = useState<Trip>(PLACEHOLDER_TRIP);
   const [hydrated, setHydrated] = useState(false);
   const ready = useRef(false);
 
   useEffect(() => {
+    let initial = newTrip();
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw) as Trip;
         if (isValidTrip(parsed)) {
-          setTripState(parsed);
+          initial = parsed;
         }
       }
     } catch {
       // ignore corrupted storage
     }
+    setTripState(initial);
     setHydrated(true);
     ready.current = true;
   }, []);

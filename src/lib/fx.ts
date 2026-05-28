@@ -93,18 +93,24 @@ export type FxState =
 
 export function useFxRates(): FxState {
   const [tick, setTick] = useState(0);
-  const [state, setState] = useState<FxState>(() => {
-    const cached = readCache();
-    const refresh = () => setTick((n) => n + 1);
-    if (cached) return { status: "ready", rates: { ...FALLBACK_RATES, ...cached.rates }, asOf: cached.date, refresh };
-    return { status: "loading", rates: { ...FALLBACK_RATES }, refresh };
-  });
+  const [state, setState] = useState<FxState>(() => ({
+    status: "loading",
+    rates: { ...FALLBACK_RATES },
+    refresh: () => {},
+  }));
 
   useEffect(() => {
     const refresh = () => setTick((n) => n + 1);
-    if (tick === 0 && state.status === "ready") return;
+    if (tick === 0) {
+      const cached = readCache();
+      if (cached) {
+        setState({ status: "ready", rates: { ...FALLBACK_RATES, ...cached.rates }, asOf: cached.date, refresh });
+        return;
+      }
+    } else {
+      setState((s) => ({ status: "loading", rates: s.rates, refresh }));
+    }
     let active = true;
-    if (tick > 0) setState((s) => ({ status: "loading", rates: s.rates, refresh }));
     fetchRates()
       .then((rates) => {
         if (!active) return;
