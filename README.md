@@ -1,4 +1,4 @@
-# Camunda Offsite Planner
+# Offsite Planner
 
 A small Next.js app to plan a team offsite against a per-person budget pool, see the variance, and look up indicative flight prices.
 

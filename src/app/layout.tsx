@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Camunda Offsite Planner",
-  description: "Plan a Camunda team offsite against a per-person budget.",
+  title: "Offsite Planner",
+  description: "Plan a team offsite against a per-person budget.",
 };
 
 export default function RootLayout({

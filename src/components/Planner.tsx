@@ -52,7 +52,7 @@ export default function Planner() {
               <Plane className="h-4 w-4" />
             </span>
             <div>
-              <h1 className="text-base font-semibold leading-none">Camunda Offsite Planner</h1>
+              <h1 className="text-base font-semibold leading-none">Offsite Planner</h1>
               <p className="text-[11px] text-neutral-500 mt-0.5">Plan team offsites against a per-person EUR budget. DRI: FP&amp;A</p>
             </div>
           </div>
